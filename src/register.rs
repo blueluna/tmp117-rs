@@ -79,6 +79,16 @@ impl Default for Average {
         Self::NoAverage
     }
 }
+impl Average {
+    pub(crate) fn number_of_samples(&self) -> u32 {
+        match self {
+            Self::NoAverage => 1,
+            Self::Avg8 => 8,
+            Self::Avg32 => 32,
+            Self::Avg64 => 64,
+        }
+    }
+}
 
 /// Conversion cycle. It depends on the average selected. The enum represents the values for no average.
 /// | CONV      | AVG = 00      | AVG = 01      | AVG = 10      | AVG = 11      |

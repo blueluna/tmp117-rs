@@ -135,6 +135,20 @@ where
         Ok(())
     }
 
+    async fn wait_for_data_delay<D>(&mut self, microseconds: u32, delay: &mut D) -> Result<(), Error<E>>
+    where
+        D: embedded_hal_async::delay::DelayNs,
+    {
+        delay.delay_us(microseconds).await;
+        let config: Configuration = self.tmp_ll.read()?;
+        if config.data_ready() {
+            Ok(())
+        }
+        else {
+            Err(Error::DataNotReady)
+        }
+    }
+
     fn wait_for_alert(&mut self) -> Result<Alert, Error<E>> {
         loop {
             let alert = self.check_alert();
@@ -229,6 +243,23 @@ where
     pub fn oneshot(&mut self, average: Average) -> Result<f32, Error<E>> {
         self.set_oneshot(average)?;
         self.wait_for_data()?;
+        let data = self.read_temp_raw()?;
+        Ok(data)
+    }
+
+    /// Wait for data and read the temperature in celsius and shutdown since it's a oneshot
+    pub async fn oneshot_delay<D>(
+        &mut self,
+        average: Average,
+        delay: &mut D,
+    ) -> Result<f32, Error<E>>
+    where
+        D: embedded_hal_async::delay::DelayNs,
+    {
+        self.set_oneshot(average)?;
+        // One conversion time is maximum 17.5 ms, typically 15.5
+        let microseconds = average.number_of_samples() * 17_500;
+        self.wait_for_data_delay(microseconds, delay).await?;
         let data = self.read_temp_raw()?;
         Ok(data)
     }
