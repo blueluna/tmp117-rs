@@ -27,8 +27,8 @@ doctest = false
 [dependencies]
 defmt = { version = "0.3", optional = true}
 
-embedded-hal = { version = "1.0.0-rc.2" }
-embedded-hal-async = { version = "1.0.0-rc.2" }
+embedded-hal = { version = "1.0.0" }
+embedded-hal-async = { version = "1.0.0" }
 
 bilge = "0.2"
 device-register = "0.4"
