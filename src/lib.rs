@@ -258,7 +258,7 @@ where
     {
         self.set_oneshot(average)?;
         // One conversion time is maximum 17.5 ms, typically 15.5
-        let microseconds = average.number_of_samples() * 17_500;
+        let microseconds = average.number_of_samples() * 20_000;
         self.wait_for_data_delay(microseconds, delay).await?;
         let data = self.read_temp_raw()?;
         Ok(data)
